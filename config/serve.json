@@ -1,0 +1,29 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/core-build/serve.schema.json",
+  "port": 4321,
+  "https": true,
+  "serveConfigurations": {
+    "default": {
+      "pageUrl": "https://projectpoint.sharepoint.com/sites/dev/SitePages/ModernPage.aspx",
+      "customActions": {
+        "3ac8d626-270d-4f5c-8504-4cbacae921f3": {
+          "location": "ClientSideExtension.ApplicationCustomizer",
+          "properties": {
+            "testMessage": "Test message1"
+          }
+        }
+      }
+    },
+    "spfxExtension": {
+      "pageUrl": "https://projectpoint.sharepoint.com/sites/dev/SitePages/ModernPage.aspx",
+      "customActions": {
+        "3ac8d626-270d-4f5c-8504-4cbacae921f3": {
+          "location": "ClientSideExtension.ApplicationCustomizer",
+          "properties": {
+            "testMessage": "Test message2"
+          }
+        }
+      }
+    }
+  }
+}
