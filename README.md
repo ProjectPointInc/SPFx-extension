@@ -1,6 +1,23 @@
 ## spfx-extension
 
-This is where you include your WebPart documentation.
+Inserts a jQuery popup on pages
+Built with SPFx
+Works with SPO and Modern pages only
+Scoped to the site collection
+Assets are deployed to CDN (including a copy of the jQuery)
+
+
+##  Deployment steps
+
+Deploy the App to SPO
+ - Copy spfx-extension.sppkg to App Catalog (SPO->AppCatalog site collection->Apps for SharePoint library)
+ - Deploy and allow permissions for the App (in Apps for SharePoint library)
+Add the App to Site Collection
+ - In the target site collection, go to site contents then "add 
+an app"
+ - Select spfx-extension-client-side-solution
+Done
+
 
 ### Building the code
 
