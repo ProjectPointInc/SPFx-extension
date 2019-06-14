@@ -1,11 +1,9 @@
 ## spfx-extension
 
-Inserts a jQuery popup on pages
-Built with SPFx
-Works with SPO and Modern pages only
+SPFx project (extension feature)
+Inserts a jQuery popup on SPO and Modern pages
 Scoped to the site collection
-Assets are deployed to CDN (including a copy of the jQuery)
-
+Assets are deployed to CDN
 
 ##  Deployment steps
 
