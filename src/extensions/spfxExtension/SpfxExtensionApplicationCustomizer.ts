@@ -38,11 +38,9 @@ export default class SpfxExtensionApplicationCustomizer
     let message2: string = "no placeholders";
     message2 = this.context.placeholderProvider.placeholderNames.map(name => PlaceholderName[name]).join(", ");
 
-    //Dialog.alert(`test`);
-    //Dialog.alert(`QueryParam: ${strings.Title}:\n\n${message}`);
     //Dialog.alert(`Title:${strings.Title}    QueryParam:${message}    Available Place Holders:${message2}`);
 
-    alert( $(`QueryParam:${message}    Available Place Holders:${message2}`).val() );
+    alert( `QueryParam:${message}    Available Place Holders:${message2}` );
 
     return Promise.resolve();
   }

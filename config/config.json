@@ -12,7 +12,7 @@
     }
   },
   "externals": {
-    "jquery": "https://code.jquery.com/jquery-3.1.0.min.js"
+    "jquery": "https://code.jquery.com/jquery-3.4.1.min.js"
   },
   "localizedResources": {
     "SpfxExtensionApplicationCustomizerStrings": "lib/extensions/spfxExtension/loc/{locale}.js"
