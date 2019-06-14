@@ -1,8 +1,11 @@
 ## spfx-extension
 
 SPFx project (extension feature)
+
 Inserts a jQuery popup on SPO and Modern pages
+
 Scoped to the site collection
+
 Assets are deployed to CDN
 
 ##  Deployment steps
@@ -45,11 +48,15 @@ gulp package-solution - TODO
 ###  Bundle
 
 gulp bundle --ship
+
 gulp package-solution --ship
+
 
 ###  Check In
 
 git commit -a -m "message"
+
 git push origin master
+
 
 
