@@ -41,3 +41,15 @@ gulp test - TODO
 gulp serve - TODO
 gulp bundle - TODO
 gulp package-solution - TODO
+
+###  Bundle
+
+gulp bundle --ship
+gulp package-solution --ship
+
+###  Check In
+
+git commit -a -m "message"
+git push origin master
+
+
