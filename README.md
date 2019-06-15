@@ -59,4 +59,16 @@ git commit -a -m "message"
 git push origin master
 
 
+###  CDN Enable on tenant
+
+Get-SPOTenantCdnEnabled -CdnType Public
+
+Get-SPOTenantCdnOrigins -CdnType Public
+
+Get-SPOTenantCdnPolicies -CdnType Public
+
+
+Set-SPOTenantCdnEnabled -CdnType Public
+
+
 
