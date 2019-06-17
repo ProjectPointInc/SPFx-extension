@@ -8,6 +8,14 @@ Scoped to the site collection
 
 Assets are deployed to CDN
 
+## TO DO
+
+replace iframe popup with KnockOut overlay 
+
+powerapp form navigation
+
+
+
 ##  Deployment steps
 
 Deploy the App to SPO
