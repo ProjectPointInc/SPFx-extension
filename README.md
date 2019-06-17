@@ -2,7 +2,7 @@
 
 SPFx project (extension feature)
 
-Inserts a jQuery popup on SPO and Modern pages
+Inserts a jQuery popup on SPO and Modern pages - replaced with iframe containing powerapp form (to do replace iframe with overlay host
 
 Scoped to the site collection
 
