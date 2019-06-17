@@ -36,7 +36,7 @@ export default class SpfxExtensionApplicationCustomizer
 
     // do not run on Thank you page
     let url: string = this.context.pageContext.site.serverRequestPath.toString();
-    if (url.search(/ThankYou.aspx/gi) == -1) {    ///  does not work in some cases (some environments?)   added line below too
+    //if (url.search(/ThankYou.aspx/gi) == -1) {    ///  does not work in some cases (some environments?)   added line below too
       if ((document.location.href).toLowerCase().indexOf("thankyou.aspx") == -1) {
         let userEmail: string = this.context.pageContext.user.email.toString();
         // debugging
@@ -74,7 +74,7 @@ export default class SpfxExtensionApplicationCustomizer
             return true;  ///  log the error and return true so user can continue
           });
       }
-    }
+    //}
     return Promise.resolve();
   }
 }
