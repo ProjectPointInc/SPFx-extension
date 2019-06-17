@@ -52,7 +52,7 @@ gulp bundle --ship
 gulp package-solution --ship
 
 
-###  Check In
+###  Check In Original
 
 git commit -a -m "message"
 
