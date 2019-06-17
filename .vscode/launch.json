@@ -22,10 +22,10 @@
       ]
     },
     {
-      "name": "Hosted workbench",
+      "name": "6SC TPBC",
       "type": "chrome",
       "request": "launch",
-      "url": "https://enter-your-SharePoint-site/_layouts/workbench.aspx",
+      "url": "https://6sc.sharepoint.com/sites/TPBC/?loadSPFX=true&debugManifestsFile=https://localhost:4321/temp/manifests.js&customActions={%223ac8d626-270d-4f5c-8504-4cbacae921f3%22:{%22location%22:%22ClientSideExtension.ApplicationCustomizer%22,%22properties%22:{%22testMessage%22:%22Hello%20as%20property!%22}}}",
       "webRoot": "${workspaceRoot}",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
@@ -37,6 +37,23 @@
       "runtimeArgs": [
         "--remote-debugging-port=9222",
         "-incognito"
+      ]
+    },
+    {
+      "name": "ProjectPoint Modern Page",
+      "type": "chrome",
+      "request": "launch",
+      "url": "https://projectpoint.sharepoint.com/sites/dev/SitePages/ModernPage.aspx?loadSPFX=true&debugManifestsFile=https://localhost:4321/temp/manifests.js&customActions={%223ac8d626-270d-4f5c-8504-4cbacae921f3%22:{%22location%22:%22ClientSideExtension.ApplicationCustomizer%22,%22properties%22:{%22testMessage%22:%22Hello%20as%20property!%22}}}",
+      "webRoot": "${workspaceRoot}",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///.././src/*": "${webRoot}/src/*",
+        "webpack:///../../../src/*": "${webRoot}/src/*",
+        "webpack:///../../../../src/*": "${webRoot}/src/*",
+        "webpack:///../../../../../src/*": "${webRoot}/src/*"
+      },
+      "runtimeArgs": [
+        "--remote-debugging-port=9222"
       ]
     }
   ]
