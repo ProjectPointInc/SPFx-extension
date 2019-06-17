@@ -58,6 +58,12 @@ git commit -a -m "message"
 
 git push origin master
 
+### New Branch
+
+git checkout -b feature_branch_name
+
+git push -u origin feature_branch_name
+
 
 ###  CDN Enable on tenant
 
