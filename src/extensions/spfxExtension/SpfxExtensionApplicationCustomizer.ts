@@ -1,6 +1,6 @@
 import { override } from '@microsoft/decorators';
 import { Log } from '@microsoft/sp-core-library';
-import { BaseApplicationCustomizer, PlaceholderName} from '@microsoft/sp-application-base';
+import { BaseApplicationCustomizer, PlaceholderName } from '@microsoft/sp-application-base';
 import { Dialog } from '@microsoft/sp-dialog';
 import * as strings from 'SpfxExtensionApplicationCustomizerStrings';
 import * as $ from 'jquery';
@@ -11,7 +11,7 @@ import {
   ISPHttpClientOptions
 } from '@microsoft/sp-http';
 
-export interface ISpfxExtensionApplicationCustomizerProperties { testMessage: string;}
+export interface ISpfxExtensionApplicationCustomizerProperties { testMessage: string; }
 
 const LOG_SOURCE: string = 'SpfxExtensionApplicationCustomizer';
 
@@ -36,42 +36,44 @@ export default class SpfxExtensionApplicationCustomizer
 
     // do not run on Thank you page
     let url: string = this.context.pageContext.site.serverRequestPath.toString();
-    if (url.search("/ThankYou.aspx/gi") == -1) {    //   alternatively if((document.location.href).toLowerCase().indexOf("thankyou.aspx") >= 0)
-      let userEmail: string = this.context.pageContext.user.email.toString();
-      // debugging
-      //let restCall: string = this.context.pageContext.web.absoluteUrl + "/_api/web/lists/GetByTitle('Enrollments')/items";
-      //let restCall: string = this.context.pageContext.web.absoluteUrl + "/_api/web/lists/getbytitle('Enrollments')/items?&$filter=UserEmail+eq+'test'";
-      let restCall: string = this.context.pageContext.web.absoluteUrl + "/_api/web/lists/getbytitle('Enrollments')/items?&$filter=UserEmail+eq+'" + userEmail + "'";
+    if (url.search(/ThankYou.aspx/gi) == -1) {    ///  does not work in some cases (some environments?)   added line below too
+      if ((document.location.href).toLowerCase().indexOf("thankyou.aspx") == -1) {
+        let userEmail: string = this.context.pageContext.user.email.toString();
+        // debugging
+        //let restCall: string = this.context.pageContext.web.absoluteUrl + "/_api/web/lists/GetByTitle('Enrollments')/items";
+        //let restCall: string = this.context.pageContext.web.absoluteUrl + "/_api/web/lists/getbytitle('Enrollments')/items?&$filter=UserEmail+eq+'test'";
+        let restCall: string = this.context.pageContext.web.absoluteUrl + "/_api/web/lists/getbytitle('Enrollments')/items?&$filter=UserEmail+eq+'" + userEmail + "'";
 
-      this.ItemExists(restCall).then((result) => {
-        let itemExists: boolean;
-        itemExists = result;
-        // do not run if enrollment record found
-        if (!itemExists) {
-          console.log("item exist .............     " + itemExists);
-          let message: string = this.properties.testMessage;
-          if (!message) {
-            message = '(No properties were provided.)';
+        this.ItemExists(restCall).then((result) => {
+          let itemExists: boolean;
+          itemExists = result;
+          // do not run if enrollment record found
+          if (!itemExists) {
+            console.log("item exist .............     " + itemExists);
+            let message: string = this.properties.testMessage;
+            if (!message) {
+              message = '(No properties were provided.)';
+            }
+
+            let message2: string = "no placeholders";
+            message2 = this.context.placeholderProvider.placeholderNames.map(name => PlaceholderName[name]).join(", ");
+
+            // debugging
+            //Dialog.alert(`Title:${strings.Title}    QueryParam:${message}    Available Place Holders:${message2}`);
+            //alert(`userEmail: ${userEmail}    QueryParam:${message}    Available Place Holders:${message2}     ListItem Exists:${itemExists}`);
+
+            let appendHTML: Element = document.createElement("div");
+            let formGUID: string = "fca15810-833c-48a2-b45b-14d4a16382e3";     //"473cc4ab-6455-463b-8f23-08a0ab89b856";   /// need to add to environment variables
+            let formURL: string = "https://web.powerapps.com/webplayer/iframeapp?hidenavbar=false&amp;screenColor=white&amp;appId=/providers/Microsoft.PowerApps/apps/" + formGUID + "&amp;userEmail=" + userEmail;
+            appendHTML.innerHTML = '<div style="position:absolute;width:444px;height:790px;z-index:15;top:25%;left:50%;margin:-200px 0 0 -200px;border:1px solid black;"><iframe width="444" height="790" src="' + formURL + '"></iframe></div>';
+            document.body.appendChild(appendHTML);
           }
-
-          let message2: string = "no placeholders";
-          message2 = this.context.placeholderProvider.placeholderNames.map(name => PlaceholderName[name]).join(", ");
-
-          // debugging
-          //Dialog.alert(`Title:${strings.Title}    QueryParam:${message}    Available Place Holders:${message2}`);
-          //alert(`userEmail: ${userEmail}    QueryParam:${message}    Available Place Holders:${message2}     ListItem Exists:${itemExists}`);
-
-          let appendHTML: Element = document.createElement("div");
-          let formGUID: string = "fca15810-833c-48a2-b45b-14d4a16382e3";     //"473cc4ab-6455-463b-8f23-08a0ab89b856";   /// need to add to environment variables
-          let formURL: string = "https://web.powerapps.com/webplayer/iframeapp?hidenavbar=false&amp;screenColor=white&amp;appId=/providers/Microsoft.PowerApps/apps/"+formGUID+"&amp;userEmail="+userEmail;
-          appendHTML.innerHTML='<div style="position:absolute;width:444px;height:790px;z-index:15;top:25%;left:50%;margin:-200px 0 0 -200px;border:1px solid black;"><iframe width="444" height="790" src="'+formURL+'"></iframe></div>';
-          document.body.appendChild(appendHTML);
-        }
-      })
-      .catch((error: any) => {
-        console.log(error);
-        return true;  ///  log the error and return true so user can continue
-      });
+        })
+          .catch((error: any) => {
+            console.log(error);
+            return true;  ///  log the error and return true so user can continue
+          });
+      }
     }
     return Promise.resolve();
   }
@@ -95,7 +97,7 @@ export default class SpfxExtensionApplicationCustomizer
 <iframe width="100%" height="100%" src="https://web.powerapps.com/webplayer/iframeapp?hidenavbar=true&amp;screenColor=white&amp;appId=/providers/Microsoft.PowerApps/apps/473cc4ab-6455-463b-8f23-08a0ab89b856"></iframe>
 
 
-6sc form guid  
+6sc form guid
 fca15810-833c-48a2-b45b-14d4a16382e3
 
 pp form guid
