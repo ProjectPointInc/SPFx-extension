@@ -12,7 +12,15 @@
     }
   },
   "externals": {
-    "jquery": "https://code.jquery.com/jquery-3.4.1.min.js"
+    "jquery": {
+      "path": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js",
+      "globalName": "jQuery"
+    },
+    "modal": {
+      "path": "https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js",
+      "globalName": "jQuery",
+      "globalDependencies": ["jquery"]
+    }
   },
   "localizedResources": {
     "SpfxExtensionApplicationCustomizerStrings": "lib/extensions/spfxExtension/loc/{locale}.js"

@@ -1,6 +1,5 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-extension-manifest.schema.json",
-
   "id": "3ac8d626-270d-4f5c-8504-4cbacae921f3",
   "alias": "SpfxExtensionApplicationCustomizer",
   "componentType": "Extension",

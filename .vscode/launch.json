@@ -25,7 +25,7 @@
       "name": "6SC TPBC",
       "type": "chrome",
       "request": "launch",
-      "url": "https://6sc.sharepoint.com/sites/TPBC/SitePages/ThankYou.aspx?loadSPFX=true&debugManifestsFile=https://localhost:4321/temp/manifests.js&customActions={%223ac8d626-270d-4f5c-8504-4cbacae921f3%22:{%22location%22:%22ClientSideExtension.ApplicationCustomizer%22,%22properties%22:{%22testMessage%22:%22Hello%20as%20property!%22}}}",
+      "url": "https://6sc.sharepoint.com/sites/TPBC/SitePages/Home.aspx?loadSPFX=true&debugManifestsFile=https://localhost:4321/temp/manifests.js&customActions={%223ac8d626-270d-4f5c-8504-4cbacae921f3%22:{%22location%22:%22ClientSideExtension.ApplicationCustomizer%22,%22properties%22:{%22testMessage%22:%22Hello%20as%20property!%22}}}",
       "webRoot": "${workspaceRoot}",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
