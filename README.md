@@ -1,6 +1,34 @@
 ## spfx-extension
 
-This is where you include your WebPart documentation.
+SPFx project (extension feature)
+
+Inserts a jQuery popup on SPO and Modern pages - replaced with iframe containing powerapp form (to do replace iframe with overlay host
+
+Scoped to the site collection
+
+Assets are deployed to CDN
+
+## TO DO
+
+replace iframe popup with KnockOut overlay 
+
+powerapp form navigation
+
+
+
+##  Deployment steps
+
+Deploy the App to SPO
+ - Copy spfx-extension.sppkg to App Catalog (SPO->AppCatalog site collection->Apps for SharePoint library)
+ - Deploy and allow permissions for the App (in Apps for SharePoint library)
+ 
+Add the App to Site Collection
+ - In the target site collection, go to site contents then "add 
+an app"
+ - Select spfx-extension-client-side-solution
+ 
+Done
+
 
 ### Building the code
 
@@ -24,3 +52,36 @@ gulp test - TODO
 gulp serve - TODO
 gulp bundle - TODO
 gulp package-solution - TODO
+
+###  Bundle
+
+gulp bundle --ship
+
+gulp package-solution --ship
+
+
+###  Check In Original
+
+git commit -a -m "message"
+
+git push origin master
+
+### New Branch
+
+git checkout -b modalform
+
+git push -u origin modalform
+
+
+###  CDN Enable on tenant
+
+Get-SPOTenantCdnEnabled -CdnType Public
+
+Get-SPOTenantCdnOrigins -CdnType Public
+
+Get-SPOTenantCdnPolicies -CdnType Public
+
+Set-SPOTenantCdnEnabled -CdnType Public
+
+
+
