@@ -97,7 +97,7 @@ export default class SpfxExtensionApplicationCustomizer
             message2 = this.context.placeholderProvider.placeholderNames.map(name => PlaceholderName[name]).join(", ");
 
             let modal: Element = document.createElement("div");
-            modal.innerHTML = "<div id='ex1' class='modal' style='z-index:1000;'><iframe width='450'frameborder='0' height='650' src='https://6sc.sharepoint.com/sites/TPBC/Lists/Enrollments/completeEnrollment.aspx?userEmail="+userEmail+"'></iframe></div>";
+            modal.innerHTML = "<div id='ex1' class='modal' style='z-index:1000;'><iframe width='450'frameborder='0' height='650' src='https://6sc.sharepoint.com/sites/TPBC/Lists/Enrollments/completeEnrollment.aspx?userEmail="+userEmail+"&source=https://6sc.sharepoint.com/sites/TPBC/Lists/Enrollments/completeEnrollment.aspx'></iframe></div>";
             modal.innerHTML += "<script type='text/javascript'>$('#ex1').blur(function() {window.location.href='"+redirectUrl+"'})</sript>";
             document.body.appendChild(modal);
 
@@ -123,9 +123,9 @@ export default class SpfxExtensionApplicationCustomizer
             //});
 
             // works for modal
-            //$('#ex1').blur(function(){
-            //  this.FormCancel();
-            //});
+            $('#ex1').blur(function(){
+              document.location.href=redirectUrl;
+            });
 
             //$('#ex1').focusout(function(){
             //  this.FormCancel();
