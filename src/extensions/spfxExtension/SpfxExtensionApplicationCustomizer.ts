@@ -1,33 +1,15 @@
 import { override } from '@microsoft/decorators';
 import { Log } from '@microsoft/sp-core-library';
-import { BaseApplicationCustomizer, PlaceholderName } from '@microsoft/sp-application-base';
-import { Dialog } from '@microsoft/sp-dialog';
-import * as strings from 'SpfxExtensionApplicationCustomizerStrings';
+import { BaseApplicationCustomizer, PlaceholderName, PlaceholderContent } from '@microsoft/sp-application-base';
+//import { Dialog } from '@microsoft/sp-dialog';
+//import * as strings from 'SpfxExtensionApplicationCustomizerStrings';
 
 declare var $: any;
+
 require('jquery');
 require('modal');
 
-
-
 import { SPComponentLoader } from '@microsoft/sp-loader';
-/*  
-bootstrap
-  "externals": {
-    "jquery": {
-      "path": "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js",
-      "globalName": "jquery"
-    },
-    "bootstrap": {
-      "path": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js",
-      "globalName": "bootstrap",
-      "globalDependencies": ["jquery"]
-    }
-  },
-
-  import('bootstrap');
-*/
-
 
 import {
   SPHttpClient,
@@ -36,47 +18,55 @@ import {
   ISPHttpClientOptions
 } from '@microsoft/sp-http';
 
-export interface ISpfxExtensionApplicationCustomizerProperties { testMessage: string;userEmail: string; listName:string; }
+export interface ISpfxExtensionApplicationCustomizerProperties {
+  testMessage: string;
+  userEmail: string;
+  listName: string;
+  itemId: number;
+}
 
 interface IListItem {
-  Title?: string;
-  EmailAddress:string;
+  // Title?: string;
+  // EmailAddress: string;
   Id: number;
   CompletedEnrollment: boolean;
 }
 
-//declare function FormCancel(): void;
-
 const LOG_SOURCE: string = 'SpfxExtensionApplicationCustomizer';
 const redirectUrl: string = 'https://6sc.sharepoint.com/sites/TPBC/SitePages/ThankYou.aspx';
 
-export default class SpfxExtensionApplicationCustomizer
-  extends BaseApplicationCustomizer<ISpfxExtensionApplicationCustomizerProperties> {
+export default class SpfxExtensionApplicationCustomizer extends BaseApplicationCustomizer<ISpfxExtensionApplicationCustomizerProperties> {
 
-    constructor() {
-      super();
-      SPComponentLoader.loadCss('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css');
-      //SPComponentLoader.loadCss('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
-      //$('#ex1').on('hidden.bs.modal', function(e) {
-      //  document.location.href = 'https://6sc.sharepoint.com/sites/TPBC/SitePages/ThankYou.aspx';
-      //});
-    }
+  private _topPlaceholder: PlaceholderContent | undefined;
 
-   //public FormCancel() {window.location.href=redirectUrl;}
 
-   private listItemEntityTypeName: string = undefined;
 
-  private ItemExists(restCall: string): Promise<boolean> {
-       return this.context.spHttpClient.get(restCall, SPHttpClient.configurations.v1)
-      .then((response: SPHttpClientResponse) => {
-        return response.json();
-      })
-      .then((json: any) => {
-        console.log(restCall);
-        console.log(json.value.length);
-        return json.value.length > 0;
-      });
+
+  constructor() {
+    super();
+    SPComponentLoader.loadCss('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css');
   }
+
+  public iframeOnload(url: string): void {
+    if (url.indexOf("Source") == -1) {
+      this.getLatestItemId().then((result) => {
+        this.properties.itemId = result;
+        if (this.properties.itemId > 0) {
+          window.document.location.href = redirectUrl;
+        } else {
+          $.modal.defaults = { closeExisting: true };
+          $.modal.close();
+        }
+      })
+        .catch((error: any) => {
+          console.log(error);
+          $.modal.defaults = { closeExisting: true };
+          $.modal.close();  ///  log the error and user can continues
+        });
+    }
+  }
+
+  private listItemEntityTypeName: string = undefined;
 
   private getLatestItemId(): Promise<number> {
     return new Promise<number>((resolve: (itemId: number) => void, reject: (error: any) => void): void => {
@@ -101,65 +91,120 @@ export default class SpfxExtensionApplicationCustomizer
         });
     });
   }
-  
-  public CompleteEnrollment(): void {
-    //this.updateStatus('Loading latest items...');
-    $('#ex1').modal('hide');
-    let latestItemId: number = undefined;
-    let etag: string = undefined;
-    let listItemEntityTypeName: string = undefined;
-    this.getListItemEntityTypeName()   ///<d:ListItemEntityTypeFullName>SP.Data.EnrollmentsListItem</d:ListItemEntityTypeFullName>
-      .then((listItemType: string): Promise<number> => {
-        listItemEntityTypeName = listItemType;
-        return this.getLatestItemId();
-      })
-      .then((itemId: number): Promise<SPHttpClientResponse> => {
-        if (itemId === -1) {
-          throw new Error('No items found in the list');
-        }
 
-        latestItemId = itemId;
-        //this.updateStatus(`Loading information about item ID: ${latestItemId}...`);
-        return this.context.spHttpClient.get(`${this.context.pageContext.web.absoluteUrl}/_api/web/lists/getbytitle('${this.properties.listName}')/items(${latestItemId})?$select=Id`,
-          SPHttpClient.configurations.v1,
-          {
-            headers: {
-              'Accept': 'application/json;odata=nometadata',
-              'odata-version': ''
-            }
-          });
+  private InsertJSFile(url: string): void {
+    let head: any = document.getElementsByTagName("head")[0] || document.documentElement;
+    let script: HTMLScriptElement = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = url;
+    head.appendChild(script);
+    document.getElementsByTagName("head")[0].appendChild(script);
+  }
+
+
+  private showIframe(): void {
+    let div: HTMLDivElement = document.createElement("div");
+    div.id = "ex1";
+    div.className = "modal";
+    //div.onblur = ()=>{window.document.location.href=redirectUrl;};
+
+    let iframe: any = document.createElement("iframe");
+    iframe.onload = () => { this.iframeOnload(iframe.contentWindow.location.href); };
+    //iframe.onloadend = () => {this.iframeOnload(iframe.contentWindow.location.href);};
+    iframe.style.overflow = "hidden";
+    iframe.width = "450";
+    iframe.height = "650";
+    iframe.frameBorder = "0";
+    iframe.src = `https://6sc.sharepoint.com/sites/TPBC/Lists/Enrollments/EditEnrollment.aspx?isDlg=true&ID=${this.properties.itemId}&userEmail=${this.properties.userEmail}&Source=https://6sc.sharepoint.com/sites/TPBC/Lists/Enrollments/EditEnrollment.aspx?ID%3D${this.properties.itemId}&isDlg=true`;
+    iframe.onblur = () => { window.location.href = redirectUrl; };
+    div.appendChild(iframe);
+    document.body.appendChild(div);
+
+    $("#ex1").modal({
+      escapeClose: false,
+      clickClose: false,
+      showClose: false,
+      fadeDuration: 100
+    });
+  }
+
+  private showForm(): void {
+    let formDiv:HTMLDivElement = document.createElement("div");
+    formDiv.innerHTML=`
+    <div id="ex1" class="modal">
+      <input id="CompleteButton" type="button" value="Complete Enrollment" class="complete" />
+      <input id="CancelButton" type="button" value="Cancel Enrollment" class="cancel" />
+    </div>
+    `;
+    formDiv.querySelector('input.cancel').addEventListener('click', () => { this.FormCancel(); });  // error if not found
+    formDiv.querySelector('input.complete').addEventListener('click', () => { this.FormSave(); });
+
+    if (!this._topPlaceholder) {
+      this._topPlaceholder = this.context.placeholderProvider.tryCreateContent(PlaceholderName.Top, { onDispose: this._onDispose });
+      if (this._topPlaceholder.domElement) {
+        this._topPlaceholder.domElement.appendChild(formDiv);
+      }
+    }
+
+    $("#ex1").modal({
+      escapeClose: false,
+      clickClose: false,
+      showClose: false,
+      fadeDuration: 100
+    });
+  }
+
+  public FormCancel(): void {
+    window.document.location.href = redirectUrl;
+  }
+
+  public FormSave(): void {
+    let etag: string = undefined;
+    let listItemEntityTypeName: string = "SP.Data.EnrollmentsListItem";
+
+    //const opt: ISPHttpClientOptions = { headers: { 'Content-Type': 'some value' }, body: { my: "bodyJson" } };
+    //this.context.spHttpClient.post('', SPHttpClientConfiguration.);
+
+    this.context.spHttpClient.get(`${this.context.pageContext.web.absoluteUrl}/_api/web/lists/getbytitle('${this.properties.listName}')/items(${this.properties.itemId})?$select=Id`, SPHttpClient.configurations.v1, {
+        headers: {
+          'Accept': 'application/json;odata=nometadata',
+          'odata-version': ''
+        }
       })
       .then((response: SPHttpClientResponse): Promise<IListItem> => {
         etag = response.headers.get('ETag');
         return response.json();
       })
       .then((item: IListItem): Promise<SPHttpClientResponse> => {
-        //this.updateStatus(`Updating item with ID: ${latestItemId}...`);
-        const body: string = JSON.stringify({
-          '__metadata': {
-            'type': listItemEntityTypeName
-          },
-          'CompletedEnrollment': `${true}`
-        });
-        return this.context.spHttpClient.post(`${this.context.pageContext.web.absoluteUrl}/_api/web/lists/getbytitle('${this.properties.listName}')/items(${item.Id})`,
-          SPHttpClient.configurations.v1,
-          {
+         const postbody = JSON.stringify({
+          '__metadata': {'type': listItemEntityTypeName},
+          'Title': 'test update',
+          'CompletedEnrollment': '1',
+          'UserEmail': 'jd@projectpointinc.com'
+          });
+              //          'ContentTypeId': '0x0100DD259FFD1382FA4B8AD9BB7FE83F2C8A'
+        return this.context.spHttpClient.post(`${this.context.pageContext.web.absoluteUrl}/_api/web/lists/getbytitle('${this.properties.listName}')/items(${item.Id})`, SPHttpClient.configurations.v1, {
             headers: {
               'Accept': 'application/json;odata=nometadata',
               'Content-type': 'application/json;odata=verbose',
-              'odata-version': '',
-              'IF-MATCH': etag,
-              'X-HTTP-Method': 'MERGE'
+              'odata-version': ''
             },
-            body: body
-          });
-      })
+            body: postbody
+        });
+      })    //,        'IF-MATCH': etag,        'X-HTTP-Method': 'MERGE'
       .then((response: SPHttpClientResponse): void => {
-        //this.updateStatus(`Item with ID: ${latestItemId} successfully updated`);
-      }, (error: any): void => {
-        //this.updateStatus(`Error updating item: ${error}`);
+        $.modal.defaults = { closeExisting: true };
+        $.modal.close();
+      })
+      .catch((error: any) => {
+        console.log(error);
+        //return true;  ///  log the error and return true so user can continue
       });
+
   }
+
+
+
 
   private getListItemEntityTypeName(): Promise<string> {
     return new Promise<string>((resolve: (listItemEntityTypeName: string) => void, reject: (error: any) => void): void => {
@@ -188,12 +233,9 @@ export default class SpfxExtensionApplicationCustomizer
     });
   }
 
-
-
   @override
   public onInit(): Promise<void> {
-    Log.info(LOG_SOURCE, "Initialized ${strings.Title}");
-
+    Log.info(LOG_SOURCE, "Initialized ");
     let userEmail: string = this.context.pageContext.user.email.toString();   //  phase out
     this.properties.userEmail = this.context.pageContext.user.email.toString();
     this.properties.listName = "Enrollments";
@@ -201,95 +243,29 @@ export default class SpfxExtensionApplicationCustomizer
     if (this.context.pageContext.user.isExternalGuestUser || this.context.pageContext.user.isAnonymousGuestUser) {
       // do not run on Thank you page
       let url: string = this.context.pageContext.site.serverRequestPath.toString();
-      if ((document.location.href).toLowerCase().indexOf("thankyou.aspx") == -1 && (document.location.href).toLowerCase().indexOf("enrollment.aspx") == -1)  {
+      if ((document.location.href).toLowerCase().indexOf("thankyou.aspx") == -1 && (document.location.href).toLowerCase().indexOf("enrollment.aspx") == -1) {
         let restCall: string = this.context.pageContext.web.absoluteUrl + "/_api/web/lists/getbytitle('Enrollments')/items?&$filter=UserEmail+eq+'" + userEmail + "'+and+CompletedEnrollment+eq+1";
-
         //this.ItemExists(restCall).then((result) => {
         this.getLatestItemId().then((result) => {
-          let itemId: number;
-          itemId = result;
-          // do not run if enrollment record found
-          if (itemId > 0) {
-            console.log("item exist .............     " + itemId);
-            let message: string = this.properties.testMessage;
-            if (!message) {
-              message = '(No properties were provided.)';
-            }
-
-            let message2: string = "no placeholders";
-            message2 = this.context.placeholderProvider.placeholderNames.map(name => PlaceholderName[name]).join(", ");
-
-            let modal: Element = document.createElement("div");
-            //modal.innerHTML = "<div id='ex1' class='modal' style='z-index:1000;'><iframe style='overflow:hidden;' width='450' frameborder='0' height='650' src='https://6sc.sharepoint.com/sites/TPBC/Lists/Enrollments/CompleteEnrollment.aspx?isDlg=true&ID="+itemId+"&userEmail="+userEmail+"'></iframe></div>";
-            modal.innerHTML = "<div id='ex1' class='modal' style='z-index:1000;'><iframe style='overflow:hidden;' width='450' frameborder='0' height='650' src='https://6sc.sharepoint.com/sites/TPBC/Lists/Enrollments/EditEnrollment.aspx?isDlg=true&ID="+itemId+"&userEmail="+userEmail+"'></iframe></div>";
-            //modal.innerHTML = "<div id='ex1' class='modal' style='z-index:1000;'><iframe style='overflow:hidden;' width='450' frameborder='0' height='650' src='https://web.powerapps.com/webplayer/iframeapp?hidenavbar=true&amp;screenColor=white&amp;appId=/providers/Microsoft.PowerApps/apps/473cc4ab-6455-463b-8f23-08a0ab89b856&amp;userEmail="+userEmail+"'></iframe></div>";
-            //modal.innerHTML += "<script type='text/javascript'>$('#ex1').blur(function() {window.location.href='"+redirectUrl+"'})</sript>";
-            document.body.appendChild(modal);
-
-            let head: any = document.getElementsByTagName("head")[0] || document.documentElement;
-            let script: any = document.createElement("script");
-            script.type = "text/javascript";
-            script.appendChild(document.createTextNode("function FormCancel(){window.location.href='"+redirectUrl+"';}"));
-            head.appendChild(script);
-            script.appendChild(document.createTextNode("function FormSave(){window.location.href=window.location.href;}"));
-            head.appendChild(script);
-            script.appendChild(document.createTextNode("window.addEventListener('CloseDialog', function() { document.location.href='Home.aspx'; });"));
-            head.appendChild(script);
-
-            let jscript: Element = document.createElement("script");
-            jscript.innerHTML = "window.addEventListener('CloseDialog', function() { document.location.href='Home.aspx'; });";
-            document.head.appendChild(jscript);
-
-            //script.appendChild(document.createTextNode("$('#ex1').blur(function() {window.location.href='"+redirectUrl+"'})"));
-            //head.appendChild(script);
-
-            //let modal: Element = document.createElement("div");
-            //modal.innerHTML = "<div id='ex1' class='modal' style='z-index:1000;'><input type='button' value='Complete Enrollment' onclick='CompleteEnrollment();'/></div>";
-            //document.body.appendChild(modal);
-
-            window.addEventListener('CloseDialog', () => { window.location.href='Home.aspx'; });
-
-
-            $('#ex1').modal('show');
-            //$('#ex1').modal('hide');
-
-            
-
-            //$('#ex1').on('hide',() => {
-            //  document.location.href=redirectUrl;
-            //});
-            //  works for bootstrap but not modal
-            //$('#ex1').on('hidden.bs.modal',() => {
-            //  this.FormCancel();
-            //});
-
-            // works for modal
-            //$('#ex1').blur(function(){
-            //  document.location.href=redirectUrl;
-            //});
-
-            //$('#ex1').focusout(function(){
-            //  document.location.href=redirectUrl;
-           //});
-
-     
-
-
+          this.properties.itemId = result;
+          if (this.properties.itemId > 0) {    //  only update probably should add new item
+            //this.InsertJSFile("https://6sc.sharepoint.com/sites/TPBC/SiteAssets/SpfxExtensionApplicationCustomizerCustom.js");  // includes js in site assets library
+            this.showIframe(); // works for classic form or modern form or powerapp form   `https://web.powerapps.com/webplayer/iframeapp?hidenavbar=true&amp;screenColor=white&amp;appId=/providers/Microsoft.PowerApps/apps/473cc4ab-6455-463b-8f23-08a0ab89b856&amp;userEmail=${this.properties.userEmail}"`
+            //this.showForm();   /// displays form in modal
           }
         })
           .catch((error: any) => {
             console.log(error);
             return true;  ///  log the error and return true so user can continue
           });
-      }
-    }
+      //}
+    //}
     return Promise.resolve();
   }
 
   public render(): void {
-
-    window.addEventListener("CloseDialog", () => { document.location.href='Home.aspx'; });
-
-}
-
+  }
+  private _onDispose(): void {
+    console.log('[HelloWorldApplicationCustomizer._onDispose] Disposed custom top and bottom placeholders.');
+  }
 }
