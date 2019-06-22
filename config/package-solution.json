@@ -3,9 +3,8 @@
   "solution": {
     "name": "spfx-extension-client-side-solution",
     "id": "8168f749-3f0a-4494-a45e-97fd1028936e",
-    "version": "1.0.0.0",
+    "version": "1.1.0.0",
     "includeClientSideAssets": true,
-    "isDomainIsolated": false,
     "features": [
       {
         "title": "Application Extension - Deployment of custom action.",

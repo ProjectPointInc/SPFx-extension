@@ -7,6 +7,9 @@ import { BaseApplicationCustomizer, PlaceholderName, PlaceholderContent } from '
 declare var $: any;
 require('jquery');
 require('modal');
+//import * as jquery from 'jquery'; 
+//import 'modal';
+
 
 import { SPComponentLoader } from '@microsoft/sp-loader';
 
