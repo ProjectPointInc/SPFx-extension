@@ -10,13 +10,14 @@ import { BaseApplicationCustomizer, PlaceholderName, PlaceholderContent } from '
 //require('modal');
 
 //import { SPComponentLoader } from '@microsoft/sp-loader';
-
+/*
 import {
   SPHttpClient,
   SPHttpClientResponse,
 //  SPHttpClientConfiguration,
 //  ISPHttpClientOptions
 } from '@microsoft/sp-http';
+
 
 export interface ISpfxExtensionApplicationCustomizerProperties {
   testMessage: string;
@@ -25,7 +26,7 @@ export interface ISpfxExtensionApplicationCustomizerProperties {
   itemId: number;
   url: string;
 }
-/*
+
 interface IListItem {
   // Title?: string;
   // EmailAddress: string;
@@ -35,10 +36,12 @@ interface IListItem {
 
 const redirectUrl: string = 'https://6sc.sharepoint.com/sites/TPBC/SitePages/ThankYou.aspx';
 */
+
+export interface ISpfxExtensionApplicationCustomizerProperties {}
 const LOG_SOURCE: string = 'SpfxExtensionApplicationCustomizer';
 
 export default class SpfxExtensionApplicationCustomizer extends BaseApplicationCustomizer<ISpfxExtensionApplicationCustomizerProperties> {
-
+/*
   private getLatestItemId(): Promise<number> {
     return new Promise<number>((resolve: (itemId: number) => void, reject: (error: any) => void): void => {
       this.context.spHttpClient.get(`${this.context.pageContext.web.absoluteUrl}/_api/web/lists/getbytitle('Enrollments')/items?$orderby=Id desc&$top=1&$select=id&$filter=UserEmail+eq+'${this.properties.userEmail}'+and+CompletedEnrollment+eq+0`,
@@ -62,7 +65,7 @@ export default class SpfxExtensionApplicationCustomizer extends BaseApplicationC
         });
     });
   }
-
+*/
   private InsertJSFile(url: string): void {
     let head: any = document.getElementsByTagName("head")[0] || document.documentElement;
     let script: HTMLScriptElement = document.createElement("script");
@@ -75,16 +78,22 @@ export default class SpfxExtensionApplicationCustomizer extends BaseApplicationC
 
   @override
   public onInit(): Promise<void> {
+    /*
     Log.info(LOG_SOURCE, "Initialized ");
-    this.properties.url = this.context.pageContext.web.absoluteUrl.toString();
+    this.properties.url = this.context.pageContext.web.absoluteUrl;
     this.properties.userEmail = this.context.pageContext.user.email.toString();
     this.properties.listName = "Enrollments";
+    */
 
-    this.InsertJSFile(`${this.properties.url}/SiteAssets/js/jquery.min.js`);
+    this.InsertJSFile(`${this.context.pageContext.web.absoluteUrl}/SiteAssets/js/jquery-3.4.1.min.js`);
+    //this.InsertJSFile(`https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js`);
     //this.InsertJSFile(`https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js`);
-    this.InsertJSFile(`${this.properties.url}/SiteAssets/js/site.js`);
-
-  
+    //this.InsertJSFile(`${this.properties.url}/SiteAssets/js/site.js`);
+    this.InsertJSFile(`${this.context.pageContext.web.absoluteUrl}/SiteAssets/js/site.js`);
+    return Promise.resolve();
+  }
+}
+  /*
 
     //  only run for external user
     if (this.context.pageContext.user.isExternalGuestUser || this.context.pageContext.user.isAnonymousGuestUser) {
@@ -108,6 +117,7 @@ export default class SpfxExtensionApplicationCustomizer extends BaseApplicationC
     }
     return Promise.resolve();
   }
+  /*
  /*
   private showIframe(): void {
     let div: HTMLDivElement = document.createElement("div");
@@ -256,4 +266,3 @@ Commented out as no longer used
     console.log('[HelloWorldApplicationCustomizer._onDispose] Disposed custom top and bottom placeholders.');
   }
   */
-}
